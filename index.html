@@ -3,160 +3,291 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentDoc Pro - Professional Move-in Documentation</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .hero { padding: 80px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; }
-        .hero h1 { font-size: 3rem; margin-bottom: 20px; }
-        .hero p { font-size: 1.25rem; margin-bottom: 30px; }
-        .btn { display: inline-block; padding: 15px 30px; background: white; color: #667eea; text-decoration: none; border-radius: 8px; font-weight: bold; }
-        .pricing { padding: 60px 0; background: #f5f5f5; }
-        .price-calc { background: white; padding: 30px; border-radius: 10px; max-width: 400px; margin: 0 auto; }
-        .price-calc h2 { margin-bottom: 20px; }
-        .price-calc select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
-        .price-display { font-size: 2rem; color: #667eea; font-weight: bold; margin: 20px 0; }
-        .book-btn { width: 100%; padding: 15px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 50px auto; padding: 40px; width: 90%; max-width: 600px; border-radius: 10px; }
-        .close { float: right; font-size: 28px; cursor: pointer; }
-        .form-group { margin: 20px 0; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; }
-    </style>
+    <title>RentDoc Pro - Professional Move-in Documentation Service</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-    <div class="hero">
+    <!-- Navigation -->
+    <nav class="navbar">
         <div class="container">
-            <h1>Professional Move-In Documentation</h1>
-            <p>Protect your security deposit with court-ready property documentation</p>
-            <a href="#pricing" class="btn">Get Started</a>
-        </div>
-    </div>
-
-    <div class="pricing" id="pricing">
-        <div class="container">
-            <div class="price-calc">
-                <h2>Instant Quote</h2>
-                <select id="bedrooms">
-                    <option value="0">Studio</option>
-                    <option value="1">1 Bedroom</option>
-                    <option value="2">2 Bedrooms</option>
-                    <option value="3">3 Bedrooms</option>
-                </select>
-                <select id="bathrooms">
-                    <option value="1">1 Bathroom</option>
-                    <option value="2">2 Bathrooms</option>
-                    <option value="3">3 Bathrooms</option>
-                </select>
-                <div class="price-display" id="price">$89</div>
-                <button class="book-btn" onclick="openBooking()">Book Now</button>
+            <div class="logo">
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <rect x="5" y="5" width="30" height="30" fill="none" stroke="#007AFF" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="8" fill="#007AFF"/>
+                    <path d="M20 16 L20 24 M16 20 L24 20" stroke="white" stroke-width="2"/>
+                </svg>
+                <span>RentDoc Pro</span>
+            </div>
+            <div class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#coverage">Coverage Area</a>
+                <button class="cta-button" onclick="openBookingModal()">Book Now</button>
             </div>
         </div>
-    </div>
+    </nav>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="badge">Professional Service</div>
+                <h1>Get Court-Ready Move-In Documentation, <span class="highlight">Done For You</span></h1>
+                <p class="hero-subtitle">
+                    Protect your security deposit with professional property documentation. 
+                    Our certified pros capture every detail so you don't have to.
+                </p>
+                
+                <div class="cta-buttons">
+                    <button class="primary-cta" onclick="openBookingModal()">
+                        <span>Book a Pro</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20">
+                            <path d="M7 10 L13 10 M10 7 L10 13" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </button>
+                    <button class="secondary-cta" disabled>
+                        <span>Get the App</span>
+                        <div class="coming-soon-badge">Coming Soon</div>
+                    </button>
+                </div>
+                
+                <div class="waitlist-prompt">
+                    <span>Want the app?</span>
+                    <a href="#" onclick="openWaitlistModal()">Join the waitlist →</a>
+                </div>
+            </div>
+            
+            <!-- Price Estimator -->
+            <div class="price-estimator">
+                <h3>Instant Quote</h3>
+                <div class="estimator-inputs">
+                    <div class="input-group">
+                        <label>Bedrooms</label>
+                        <select id="bedrooms" onchange="updatePrice()">
+                            <option value="0">Studio</option>
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4+</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Bathrooms</label>
+                        <select id="bathrooms" onchange="updatePrice()">
+                            <option value="1" selected>1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4+</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="price-display">
+                    <span class="price-label">Total:</span>
+                    <span class="price" id="priceDisplay">$89</span>
+                </div>
+                <button class="book-button" onclick="openBookingModal()">Book This Package</button>
+                <p class="price-note">✓ 72-hour guarantee included</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Indicators -->
+    <section class="trust">
+        <div class="container">
+            <div class="trust-items">
+                <div class="trust-item">
+                    <div class="icon">📍</div>
+                    <h4>Time & Location Verified</h4>
+                    <p>Every photo is time-stamped and GPS-tagged for legal authenticity</p>
+                </div>
+                <div class="trust-item">
+                    <div class="icon">📋</div>
+                    <h4>Court-Ready Reports</h4>
+                    <p>Professional documentation that stands up in deposit disputes</p>
+                </div>
+                <div class="trust-item">
+                    <div class="icon">🔄</div>
+                    <h4>72-Hour Guarantee</h4>
+                    <p>Not satisfied? We'll re-shoot for free within 72 hours</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>Book Online</h4>
+                    <p>Select your property size and preferred time slot</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Pro Arrives</h4>
+                    <p>Certified photographer documents every room systematically</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>Get Your Report</h4>
+                    <p>Receive comprehensive documentation within 24 hours</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coverage Map -->
+    <section id="coverage" class="coverage">
+        <div class="container">
+            <h2>Service Areas</h2>
+            <p class="coverage-subtitle">Currently serving Chicago's North Side</p>
+            <div id="map" class="map"></div>
+            <div class="coverage-list">
+                <h4>Available Neighborhoods:</h4>
+                <ul>
+                    <li>✓ Lincoln Park</li>
+                    <li>✓ Lake View</li>
+                    <li>✓ Lincoln Square</li>
+                    <li>✓ North Center</li>
+                    <li>✓ Uptown</li>
+                    <li>✓ Edgewater</li>
+                </ul>
+                <p class="expansion-note">Expanding to more areas soon!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h4>Do I need to be home?</h4>
+                    <p>Yes, for security and access. The session typically takes 30-45 minutes for a standard apartment.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>What if GPS fails?</h4>
+                    <p>We use multiple verification methods including WiFi positioning and manual address confirmation.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Who owns the photos?</h4>
+                    <p>You do! You receive full ownership and can use them for any legal purpose.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>How soon can you come?</h4>
+                    <p>We offer same-day service for bookings before noon, otherwise next-day.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>What's included in the report?</h4>
+                    <p>Time-stamped photos of every room, damage annotations, and a comprehensive PDF report.</p>
+                </div>
+                <div class="faq-item">
+                    <h4>Is this legally binding?</h4>
+                    <p>Our documentation meets court standards for evidence in deposit dispute cases.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
     <div id="bookingModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeBooking()">&times;</span>
-            <h2>Book Your Service</h2>
+            <span class="close" onclick="closeBookingModal()">&times;</span>
+            <h2>Book Your Documentation Service</h2>
+            
             <form id="bookingForm">
-                <div class="form-group">
-                    <input type="text" id="firstName" placeholder="First Name" required>
+                <div class="form-section">
+                    <h3>Property Details</h3>
+                    <div class="form-row">
+                        <input type="text" id="address" placeholder="Street Address*" required>
+                        <input type="text" id="unit" placeholder="Unit #">
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="city" value="Chicago" readonly>
+                        <input type="text" id="zip" placeholder="ZIP Code*" required>
+                    </div>
+                    <div class="form-row">
+                        <select id="modalBedrooms">
+                            <option value="0">Studio</option>
+                            <option value="1">1 Bedroom</option>
+                            <option value="2">2 Bedrooms</option>
+                            <option value="3">3 Bedrooms</option>
+                            <option value="4">4+ Bedrooms</option>
+                        </select>
+                        <select id="modalBathrooms">
+                            <option value="1">1 Bathroom</option>
+                            <option value="2">2 Bathrooms</option>
+                            <option value="3">3 Bathrooms</option>
+                            <option value="4">4+ Bathrooms</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="text" id="lastName" placeholder="Last Name" required>
+
+                <div class="form-section">
+                    <h3>Contact Information</h3>
+                    <div class="form-row">
+                        <input type="text" id="firstName" placeholder="First Name*" required>
+                        <input type="text" id="lastName" placeholder="Last Name*" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="email" id="email" placeholder="Email*" required>
+                        <input type="tel" id="phone" placeholder="Phone*" required>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="email" id="email" placeholder="Email" required>
+
+                <div class="form-section">
+                    <h3>Schedule</h3>
+                    <div class="calendar-container">
+                        <div class="date-selector" id="dateSelector"></div>
+                        <div class="time-slots" id="timeSlots"></div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="tel" id="phone" placeholder="Phone" required>
+
+                <div class="form-section">
+                    <h3>Special Instructions</h3>
+                    <textarea id="notes" placeholder="Gate codes, parking info, specific concerns..."></textarea>
                 </div>
-                <div class="form-group">
-                    <input type="text" id="address" placeholder="Property Address" required>
+
+                <div class="booking-summary">
+                    <div class="summary-line">
+                        <span>Service:</span>
+                        <span id="summaryService">1 Bed / 1 Bath</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Date & Time:</span>
+                        <span id="summaryDateTime">Select above</span>
+                    </div>
+                    <div class="summary-line total">
+                        <span>Total:</span>
+                        <span id="summaryPrice">$89</span>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <input type="text" id="unit" placeholder="Unit # (optional)">
-                </div>
-                <div class="form-group">
-                    <input type="text" id="zip" placeholder="ZIP Code" required>
-                </div>
-                <div class="form-group">
-                    <input type="date" id="date" required>
-                </div>
-                <div class="form-group">
-                    <select id="time" required>
-                        <option value="">Select Time</option>
-                        <option value="9:00 AM">9:00 AM</option>
-                        <option value="10:00 AM">10:00 AM</option>
-                        <option value="11:00 AM">11:00 AM</option>
-                        <option value="1:00 PM">1:00 PM</option>
-                        <option value="2:00 PM">2:00 PM</option>
-                        <option value="3:00 PM">3:00 PM</option>
-                    </select>
-                </div>
-                <button type="submit" class="book-btn">Continue to Payment</button>
+
+                <button type="submit" class="submit-booking">Proceed to Payment</button>
             </form>
         </div>
     </div>
 
-    <script>
-        // IMPORTANT: Replace with your Railway Pro Service URL
-        const API_URL = 'https://your-pro-service.railway.app/api';
-        
-        function calculatePrice() {
-            const bedrooms = parseInt(document.getElementById('bedrooms').value);
-            const bathrooms = parseInt(document.getElementById('bathrooms').value);
-            let price = 69;
-            price += bedrooms === 0 ? -10 : bedrooms * 10;
-            price += bathrooms * 10;
-            document.getElementById('price').textContent = `$${price}`;
-        }
-        
-        document.getElementById('bedrooms').addEventListener('change', calculatePrice);
-        document.getElementById('bathrooms').addEventListener('change', calculatePrice);
-        
-        function openBooking() {
-            document.getElementById('bookingModal').style.display = 'block';
-        }
-        
-        function closeBooking() {
-            document.getElementById('bookingModal').style.display = 'none';
-        }
-        
-        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                email: document.getElementById('email').value,
-                phone: document.getElementById('phone').value,
-                address: document.getElementById('address').value,
-                unit: document.getElementById('unit').value,
-                zip: document.getElementById('zip').value,
-                bedrooms: parseInt(document.getElementById('bedrooms').value),
-                bathrooms: parseInt(document.getElementById('bathrooms').value),
-                date: document.getElementById('date').value,
-                time: document.getElementById('time').value
-            };
-            
-            try {
-                const response = await fetch(`${API_URL}/bookings/create`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
-                
-                const data = await response.json();
-                if (data.sessionUrl) {
-                    window.location.href = data.sessionUrl;
-                }
-            } catch (error) {
-                alert('Error creating booking. Please try again.');
-            }
-        });
-    </script>
+    <!-- Waitlist Modal -->
+    <div id="waitlistModal" class="modal">
+        <div class="modal-content small">
+            <span class="close" onclick="closeWaitlistModal()">&times;</span>
+            <h2>Join the App Waitlist</h2>
+            <p>Be the first to know when our DIY documentation app launches!</p>
+            <form id="waitlistForm">
+                <input type="email" placeholder="Your email address" required>
+                <button type="submit">Join Waitlist</button>
+            </form>
+            <p class="privacy-note">We'll only email you about the app launch. No spam!</p>
+        </div>
+    </div>
+
+    <script src="booking.js"></script>
 </body>
 </html>
